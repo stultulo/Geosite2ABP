@@ -1,0 +1,53 @@
+# 工作流的名称
+name: Auto-update test.txt
+
+on:
+  # 允许你从 GitHub Actions 页面手动触发此工作流
+  workflow_dispatch:
+
+  # 设置定时任务
+  schedule:
+    # 每天 02:00 UTC 运行 (大约是北京时间 10:00)
+    # 你可以自由修改这个 cron 表达式
+    - cron: '0 2 * * *'
+
+jobs:
+  build-rules:
+    # 使用最新的 Ubuntu 虚拟机
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 检出 (Checkout) 你的仓库代码
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # 2. 设置 Python 3.x 环境
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # 3. 运行你的 Python 脚本
+      # 假设你的脚本在仓库根目录
+      - name: Run script to generate gfw.txt
+        run: |
+          python geosite2abp.py gfw -o gfw.txt
+
+      # 4. 检查文件是否有变动，并提交
+      - name: Commit and push if changed
+        run: |
+          # 配置 Git 用户信息
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          
+          # 检查 gfw.txt 文件是否有变动
+          # git status --porcelain 会在有变动时输出信息，否则为空
+          if [ -n "$(git status --porcelain gfw.txt)" ]; then
+            git add gfw.txt
+            # [skip ci] 是一个标准做法，防止这次 push 再次触发 CI/CD (如果也设置了 on: push)
+            git commit -m "chore(rules): Auto-update gfw.txt [skip ci]"
+            git push
+            echo "gfw.txt was updated and pushed."
+          else
+            echo "gfw.txt is already up-to-date."
+          fi
