@@ -32,9 +32,9 @@ jobs:
 
       # 3. 运行你的 Python 脚本
       # 假设你的脚本在仓库根目录
-      - name: Run script to generate gfw.txt
+      - name: Run script to generate test.txt
         run: |
-          python geosite2abp.py gfw -o gfw.txt
+          python geosite2abp.py gfw,gfwfire,google,microsoft,openai,category-scholar-!cn,category-scholar-cn -o test.txt
 
       # 4. 检查文件是否有变动，并提交
       - name: Commit and push if changed
@@ -43,14 +43,14 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           
-          # 检查 gfw.txt 文件是否有变动
+          # 检查 test.txt 文件是否有变动
           # git status --porcelain 会在有变动时输出信息，否则为空
-          if [ -n "$(git status --porcelain gfw.txt)" ]; then
-            git add gfw.txt
+          if [ -n "$(git status --porcelain test.txt)" ]; then
+            git add test.txt
             # [skip ci] 是一个标准做法，防止这次 push 再次触发 CI/CD (如果也设置了 on: push)
-            git commit -m "chore(rules): Auto-update gfw.txt [skip ci]"
+            git commit -m "chore(rules): Auto-update test.txt [skip ci]"
             git push
-            echo "gfw.txt was updated and pushed."
+            echo "test.txt was updated and pushed."
           else
-            echo "gfw.txt is already up-to-date."
+            echo "test.txt is already up-to-date."
           fi
