@@ -15,6 +15,9 @@ jobs:
   build-rules:
     # 使用最新的 Ubuntu 虚拟机
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write # 授予工作流写入仓库内容的权限
 
     steps:
       # 1. 检出 (Checkout) 你的仓库代码
